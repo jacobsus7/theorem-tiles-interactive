@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { useDrag } from 'react-dnd';
 import { Property } from '../types/theorem';
 import { Card } from '@/components/ui/card';
@@ -9,17 +9,22 @@ interface PropertyTileProps {
 }
 
 const PropertyTile: React.FC<PropertyTileProps> = ({ property }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'PROPERTY',
-    item: { id: property.id },
+    item: { id: property.id, type: 'PROPERTY' },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
   }));
 
+  // Connect the drag ref to the DOM element
+  drag(ref);
+
   return (
     <Card
-      ref={drag}
+      ref={ref}
       className={`property-tile cursor-grab ${
         isDragging ? 'opacity-50' : 'opacity-100'
       }`}

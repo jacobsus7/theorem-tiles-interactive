@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { useDrop } from 'react-dnd';
 import { Theorem, Step, DragItem } from '../types/theorem';
 import ProofStep from './ProofStep';
@@ -16,6 +16,8 @@ const ProofWorkspace: React.FC<ProofWorkspaceProps> = ({
   onApplyProperty,
   steps
 }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: 'PROPERTY',
     drop: (item: DragItem) => {
@@ -29,11 +31,14 @@ const ProofWorkspace: React.FC<ProofWorkspaceProps> = ({
     }),
   }));
 
+  // Connect the drop ref to the DOM element
+  drop(ref);
+
   const isActive = isOver && canDrop;
 
   return (
     <Card 
-      ref={drop} 
+      ref={ref} 
       className={`p-4 min-h-[200px] transition-all duration-200 ${
         isActive ? 'bg-mathBlue-100 shadow-inner' : 'bg-gray-50'
       } ${theorem.isComplete ? 'bg-mathGreen-300/30' : ''}`}
