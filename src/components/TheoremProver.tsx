@@ -9,7 +9,7 @@ import { applyProperty, isProofComplete } from '../data/theorems';
 import TheoremHeader from './TheoremHeader';
 import ProofWorkspace from './ProofWorkspace';
 import PropertiesList from './PropertiesList';
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface TheoremProverProps {
   theorem: Theorem;
@@ -21,6 +21,7 @@ const TheoremProver: React.FC<TheoremProverProps> = ({ theorem: initialTheorem }
     { expression: initialTheorem.initialExpression }
   ]);
   const isMobile = useIsMobile();
+  const { toast } = useToast();
 
   const handleApplyProperty = (propertyId: string) => {
     if (theorem.isComplete) return;
@@ -29,7 +30,11 @@ const TheoremProver: React.FC<TheoremProverProps> = ({ theorem: initialTheorem }
     const result = applyProperty(currentExpression, propertyId);
 
     if (!result) {
-      toast.error("This property doesn't apply here");
+      toast({
+        title: "Error",
+        description: "This property doesn't apply here",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -54,7 +59,10 @@ const TheoremProver: React.FC<TheoremProverProps> = ({ theorem: initialTheorem }
         isComplete: true,
         steps: [...steps, newStep]
       });
-      toast.success("Theorem proved successfully!");
+      toast({
+        title: "Success",
+        description: "Theorem proved successfully!"
+      });
     }
   };
 
