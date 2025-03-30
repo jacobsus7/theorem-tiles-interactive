@@ -9,7 +9,7 @@ import { applyProperty, isProofComplete } from '../data/theorems';
 import TheoremHeader from './TheoremHeader';
 import ProofWorkspace from './ProofWorkspace';
 import PropertiesList from './PropertiesList';
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@/hooks/use-toast";
 
 interface TheoremProverProps {
   theorem: Theorem;
