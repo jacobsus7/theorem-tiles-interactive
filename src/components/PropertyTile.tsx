@@ -2,6 +2,7 @@
 import React from 'react';
 import { useDrag } from 'react-dnd';
 import { Property } from '../types/theorem';
+import { Card } from '@/components/ui/card';
 
 interface PropertyTileProps {
   property: Property;
@@ -10,23 +11,25 @@ interface PropertyTileProps {
 const PropertyTile: React.FC<PropertyTileProps> = ({ property }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'PROPERTY',
-    item: { id: property.id, type: 'PROPERTY' },
+    item: { id: property.id },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
   }));
 
   return (
-    <div
+    <Card
       ref={drag}
-      className={`property-tile ${
+      className={`property-tile cursor-grab ${
         isDragging ? 'opacity-50' : 'opacity-100'
       }`}
       style={{ touchAction: 'none' }}
     >
-      <div className="font-medium text-mathBlue-600">{property.name}</div>
-      <div className="text-gray-600 text-sm">{property.description}</div>
-    </div>
+      <div className="p-3">
+        <div className="font-medium text-mathBlue-600">{property.name}</div>
+        <div className="text-gray-600 text-sm">{property.description}</div>
+      </div>
+    </Card>
   );
 };
 

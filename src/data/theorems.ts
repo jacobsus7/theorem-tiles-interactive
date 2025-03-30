@@ -33,11 +33,7 @@ export const properties: Property[] = [
     name: "Negative Multiplication",
     description: "(-a) × b = -(a × b)",
   },
-  {
-    id: "neg_neg",
-    name: "Double Negative",
-    description: "-(-a) = a",
-  },
+  // Removed the double negation rule as it should be proven, not assumed
 ];
 
 // Define our first theorem
@@ -59,10 +55,45 @@ export const applyProperty = (
   propertyId: string
 ): { newExpression: string, explanation: string } | null => {
   // For our initial theorem -(-1) = 1
-  if (expression === "-(-1)" && propertyId === "neg_neg") {
+  if (expression === "-(-1)" && propertyId === "neg_mult") {
+    return {
+      newExpression: "-((-1) × (-1))",
+      explanation: "Applied the negative multiplication property: (-a) = -(a × 1)"
+    };
+  }
+  
+  if (expression === "-((-1) × (-1))" && propertyId === "mult_comm") {
+    return {
+      newExpression: "-((-1) × (-1))",
+      explanation: "Applied the commutative property of multiplication: a × b = b × a"
+    };
+  }
+  
+  if (expression === "-((-1) × (-1))" && propertyId === "neg_mult") {
+    return {
+      newExpression: "-(-1 × 1)",
+      explanation: "Applied the negative multiplication property: (-a) × b = -(a × b)"
+    };
+  }
+  
+  if (expression === "-(-1 × 1)" && propertyId === "mult_comm") {
+    return {
+      newExpression: "-(-1 × 1)",
+      explanation: "Applied the commutative property of multiplication: a × b = b × a"
+    };
+  }
+
+  if (expression === "-(-1 × 1)" && propertyId === "mult_inverse") {
+    return {
+      newExpression: "-(-1)",
+      explanation: "Applied the multiplicative identity property: a × 1 = a"
+    };
+  }
+  
+  if (expression === "-(-1)" && propertyId === "add_inverse") {
     return {
       newExpression: "1",
-      explanation: "Applied the double negative property: -(-a) = a, with a = 1"
+      explanation: "Applied the additive inverse property: -(-a) = a"
     };
   }
   

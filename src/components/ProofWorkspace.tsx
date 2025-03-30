@@ -1,8 +1,9 @@
 
 import React from 'react';
 import { useDrop } from 'react-dnd';
-import { Theorem, Step } from '../types/theorem';
+import { Theorem, Step, DragItem } from '../types/theorem';
 import ProofStep from './ProofStep';
+import { Card } from '@/components/ui/card';
 
 interface ProofWorkspaceProps {
   theorem: Theorem;
@@ -17,7 +18,7 @@ const ProofWorkspace: React.FC<ProofWorkspaceProps> = ({
 }) => {
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: 'PROPERTY',
-    drop: (item: { id: string }) => {
+    drop: (item: DragItem) => {
       onApplyProperty(item.id);
       return undefined;
     },
@@ -31,9 +32,9 @@ const ProofWorkspace: React.FC<ProofWorkspaceProps> = ({
   const isActive = isOver && canDrop;
 
   return (
-    <div 
+    <Card 
       ref={drop} 
-      className={`rounded-xl p-4 min-h-[200px] transition-all duration-200 ${
+      className={`p-4 min-h-[200px] transition-all duration-200 ${
         isActive ? 'bg-mathBlue-100 shadow-inner' : 'bg-gray-50'
       } ${theorem.isComplete ? 'bg-mathGreen-300/30' : ''}`}
     >
@@ -59,7 +60,7 @@ const ProofWorkspace: React.FC<ProofWorkspaceProps> = ({
           />
         ))}
       </div>
-    </div>
+    </Card>
   );
 };
 
