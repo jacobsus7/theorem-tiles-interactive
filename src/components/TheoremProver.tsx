@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -66,8 +66,14 @@ const TheoremProver: React.FC<TheoremProverProps> = ({ theorem: initialTheorem }
     }
   };
 
+  const touchBackendOptions = {
+    enableMouseEvents: true,
+    enableTouchEvents: true,
+    delayTouchStart: 0,
+  };
+
   return (
-    <DndProvider backend={isMobile ? TouchBackend : HTML5Backend}>
+    <DndProvider backend={isMobile ? TouchBackend : HTML5Backend} options={isMobile ? touchBackendOptions : undefined}>
       <div className="max-w-3xl mx-auto p-4">
         <TheoremHeader theorem={theorem} />
         
