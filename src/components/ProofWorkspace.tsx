@@ -1,6 +1,5 @@
 
-import React, { useRef } from 'react';
-import { useDrop } from 'react-dnd';
+import React from 'react';
 import { Theorem, Step } from '../types/theorem';
 import ProofStep from './ProofStep';
 import { Card } from '@/components/ui/card';
@@ -16,44 +15,23 @@ const ProofWorkspace: React.FC<ProofWorkspaceProps> = ({
   onApplyProperty,
   steps
 }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  
-  const [{ isOver, canDrop }, drop] = useDrop({
-    accept: 'PROPERTY',
-    drop: (item: { id: string }) => {
-      console.log("Dropped item:", item);
-      onApplyProperty(item.id);
-      return undefined;
-    },
-    canDrop: () => !theorem.isComplete,
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
-  });
-
-  drop(ref);
-
-  const isActive = isOver && canDrop;
-
   return (
     <Card 
-      ref={ref} 
       className={`p-4 min-h-[200px] transition-all duration-200 ${
-        isActive ? 'bg-mathBlue-100 shadow-inner' : 'bg-gray-50'
-      } ${theorem.isComplete ? 'bg-mathGreen-300/30' : ''}`}
+        theorem.isComplete ? 'bg-mathGreen-300/30' : 'bg-gray-50 hover:bg-gray-100'
+      }`}
     >
       <h2 className="text-lg font-medium mb-3 text-center">
         {theorem.isComplete ? 
           'Theorem Proved! ✅' : 
-          'Drag Properties Here to Apply Them'
+          'Click Properties Below to Apply Them'
         }
       </h2>
       
       <div className="space-y-2">
         {steps.length === 0 && (
           <div className="text-center py-8 text-gray-400">
-            Start by dragging a property to apply
+            Start by clicking a property to apply
           </div>
         )}
         
