@@ -83,7 +83,10 @@ const TheoremProver: React.FC<TheoremProverProps> = ({ theorem: initialTheorem }
           steps={steps}
         />
         
-        <PropertiesList properties={theorem.availableProperties} />
+        <PropertiesList 
+          properties={theorem.availableProperties}
+          onApplyProperty={handleApplyProperty}
+        />
       </div>
     </DndProvider>
   );

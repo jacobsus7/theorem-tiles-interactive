@@ -1,7 +1,7 @@
 
 import React, { useRef } from 'react';
 import { useDrop } from 'react-dnd';
-import { Theorem, Step, DragItem } from '../types/theorem';
+import { Theorem, Step } from '../types/theorem';
 import ProofStep from './ProofStep';
 import { Card } from '@/components/ui/card';
 
@@ -20,7 +20,7 @@ const ProofWorkspace: React.FC<ProofWorkspaceProps> = ({
   
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: 'PROPERTY',
-    drop: (item: DragItem) => {
+    drop: (item: { id: string }) => {
       onApplyProperty(item.id);
       return undefined;
     },
