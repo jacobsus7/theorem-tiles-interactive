@@ -14,16 +14,14 @@ const PropertyTile: React.FC<PropertyTileProps> = ({ property, onApplyProperty }
   
   const [{ isDragging }, drag] = useDrag({
     type: 'PROPERTY',
-    item: { id: property.id },
+    item: () => ({ id: property.id }),
     collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
+      isDragging: monitor.isDragging(),
     }),
   });
 
-  // Connect the drag ref to the DOM element
   drag(ref);
 
-  // Add click handler as alternative to drag-and-drop
   const handleClick = () => {
     onApplyProperty(property.id);
   };

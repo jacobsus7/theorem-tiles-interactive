@@ -21,17 +21,17 @@ const ProofWorkspace: React.FC<ProofWorkspaceProps> = ({
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: 'PROPERTY',
     drop: (item: { id: string }) => {
+      console.log("Dropped item:", item);
       onApplyProperty(item.id);
       return undefined;
     },
     canDrop: () => !theorem.isComplete,
     collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
-      canDrop: !!monitor.canDrop(),
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
     }),
   });
 
-  // Connect the drop ref to the DOM element
   drop(ref);
 
   const isActive = isOver && canDrop;
