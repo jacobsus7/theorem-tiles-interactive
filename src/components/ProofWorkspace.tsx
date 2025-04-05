@@ -18,7 +18,7 @@ const ProofWorkspace: React.FC<ProofWorkspaceProps> = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   
-  const [{ isOver, canDrop }, drop] = useDrop(() => ({
+  const [{ isOver, canDrop }, drop] = useDrop({
     accept: 'PROPERTY',
     drop: (item: { id: string }) => {
       onApplyProperty(item.id);
@@ -29,7 +29,7 @@ const ProofWorkspace: React.FC<ProofWorkspaceProps> = ({
       isOver: !!monitor.isOver(),
       canDrop: !!monitor.canDrop(),
     }),
-  }));
+  });
 
   // Connect the drop ref to the DOM element
   drop(ref);

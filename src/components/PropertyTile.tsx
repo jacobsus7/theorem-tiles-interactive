@@ -12,13 +12,13 @@ interface PropertyTileProps {
 const PropertyTile: React.FC<PropertyTileProps> = ({ property, onApplyProperty }) => {
   const ref = useRef<HTMLDivElement>(null);
   
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [{ isDragging }, drag] = useDrag({
     type: 'PROPERTY',
     item: { id: property.id },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
-  }));
+  });
 
   // Connect the drag ref to the DOM element
   drag(ref);
