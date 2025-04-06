@@ -1,4 +1,3 @@
-
 import { Theorem, Property } from "../types/theorem";
 
 // Define the available properties (axioms)
@@ -33,15 +32,28 @@ export const properties: Property[] = [
     name: "Negative Multiplication",
     description: "(-a) × b = -(a × b)",
   },
-  // Removed the double negation rule as it should be proven, not assumed
+  {
+    id: "assoc_mult",
+    name: "Associative Property of Multiplication",
+    description: "a × (b × c) = (a × b) × c",
+  },
 ];
 
-// Define our first theorem
+// Define our theorems
 export const theorems: Theorem[] = [
   {
     id: "neg_neg_one",
     title: "Prove that -(-1) = 1",
     initialExpression: "-(-1)",
+    targetExpression: "1",
+    availableProperties: properties,
+    steps: [],
+    isComplete: false,
+  },
+  {
+    id: "inverse_product",
+    title: "Prove that a×b×(a^-1)×(b^-1) = 1",
+    initialExpression: "a×b×(a^-1)×(b^-1)",
     targetExpression: "1",
     availableProperties: properties,
     steps: [],
@@ -54,7 +66,7 @@ export const applyProperty = (
   expression: string, 
   propertyId: string
 ): { newExpression: string, explanation: string } | null => {
-  // For our initial theorem -(-1) = 1
+  // For our first theorem -(-1) = 1
   if (expression === "-(-1)" && propertyId === "neg_mult") {
     return {
       newExpression: "-((-1) × (-1))",
@@ -94,6 +106,49 @@ export const applyProperty = (
     return {
       newExpression: "1",
       explanation: "Applied the additive inverse property: -(-a) = a"
+    };
+  }
+  
+  // For our second theorem a×b×(a^-1)×(b^-1) = 1
+  if (expression === "a×b×(a^-1)×(b^-1)" && propertyId === "mult_comm") {
+    return {
+      newExpression: "a×b×(b^-1)×(a^-1)",
+      explanation: "Applied commutativity of multiplication to swap (a^-1) and (b^-1)"
+    };
+  }
+  
+  if (expression === "a×b×(b^-1)×(a^-1)" && propertyId === "assoc_mult") {
+    return {
+      newExpression: "a×(b×(b^-1))×(a^-1)",
+      explanation: "Applied associative property to group b and its inverse"
+    };
+  }
+  
+  if (expression === "a×(b×(b^-1))×(a^-1)" && propertyId === "mult_inverse") {
+    return {
+      newExpression: "a×1×(a^-1)",
+      explanation: "Applied multiplicative inverse: b×(b^-1) = 1"
+    };
+  }
+  
+  if (expression === "a×1×(a^-1)" && propertyId === "mult_comm") {
+    return {
+      newExpression: "a×(a^-1)×1",
+      explanation: "Applied commutativity of multiplication to reorder terms"
+    };
+  }
+  
+  if (expression === "a×(a^-1)×1" && propertyId === "mult_inverse") {
+    return {
+      newExpression: "1×1",
+      explanation: "Applied multiplicative inverse: a×(a^-1) = 1"
+    };
+  }
+  
+  if (expression === "1×1" && propertyId === "mult_inverse") {
+    return {
+      newExpression: "1",
+      explanation: "Applied multiplicative identity: 1×1 = 1"
     };
   }
   
