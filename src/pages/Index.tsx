@@ -2,7 +2,6 @@
 import React from 'react';
 import TheoremProver from '@/components/TheoremProver';
 import { theorems } from '@/data/theorems';
-import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const Index = () => {

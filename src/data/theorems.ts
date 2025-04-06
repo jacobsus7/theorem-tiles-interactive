@@ -21,7 +21,7 @@ export const properties: Property[] = [
   {
     id: "mult_inverse",
     name: "Multiplicative Inverse",
-    description: "a × (1/a) = 1, for a ≠ 0",
+    description: "a × (a^-1) = 1, for a ≠ 0",
   },
   {
     id: "distributive",
@@ -42,6 +42,16 @@ export const properties: Property[] = [
     id: "mult_identity",
     name: "Multiplicative Identity",
     description: "a × 1 = a and 1 × a = a",
+  },
+  {
+    id: "mult_identity_def",
+    name: "Definition of Multiplicative Identity",
+    description: "a × 1 = 1 × a = a",
+  },
+  {
+    id: "add_identity_def",
+    name: "Definition of Additive Identity",
+    description: "a + 0 = 0 + a = a",
   },
   {
     id: "triangle_inequality",
@@ -132,7 +142,7 @@ export const applyProperty = (
     };
   }
 
-  if (expression === "-(-1 × 1)" && propertyId === "mult_inverse") {
+  if (expression === "-(-1 × 1)" && propertyId === "mult_identity") {
     return {
       newExpression: "-(-1)",
       explanation: "Applied the multiplicative identity property: a × 1 = a"
@@ -168,7 +178,8 @@ export const applyProperty = (
     };
   }
   
-  if (expression === "a×1×(a^-1)" && propertyId === "mult_identity") {
+  if (expression === "a×1×(a^-1)" && propertyId === "mult_identity" || 
+      expression === "a×1×(a^-1)" && propertyId === "mult_identity_def") {
     return {
       newExpression: "a×(a^-1)",
       explanation: "Applied multiplicative identity: a×1 = a"
@@ -182,11 +193,27 @@ export const applyProperty = (
     };
   }
   
-  // Fix for 1×1 = 1
-  if (expression === "1×1" && propertyId === "mult_identity") {
+  // For 1×1 = 1
+  if ((expression === "1×1" && propertyId === "mult_identity") || 
+      (expression === "1×1" && propertyId === "mult_identity_def")) {
     return {
       newExpression: "1",
       explanation: "Applied multiplicative identity: 1×1 = 1"
+    };
+  }
+  
+  // For additive identity
+  if (expression.includes("+0") && propertyId === "add_identity_def") {
+    return {
+      newExpression: expression.replace("+0", ""),
+      explanation: "Applied additive identity: a+0 = a"
+    };
+  }
+  
+  if (expression.includes("0+") && propertyId === "add_identity_def") {
+    return {
+      newExpression: expression.replace("0+", ""),
+      explanation: "Applied additive identity: 0+a = a"
     };
   }
   
