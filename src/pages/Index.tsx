@@ -22,7 +22,7 @@ const Index = () => {
             Continue until you've proven the theorem.
           </p>
           
-          <div className="grid gap-4 md:grid-cols-2 mt-6">
+          <div className="grid gap-4 md:grid-cols-3 mt-6">
             <Link to="/" className="bg-mathBlue-50 rounded-lg p-4 hover:bg-mathBlue-100 transition-colors">
               <h3 className="font-medium mb-2">Double Negation</h3>
               <p className="text-sm text-gray-600">Prove that -(-1) = 1</p>
@@ -31,6 +31,11 @@ const Index = () => {
             <Link to="/inverse-product" className="bg-mathBlue-50 rounded-lg p-4 hover:bg-mathBlue-100 transition-colors">
               <h3 className="font-medium mb-2">Multiplicative Inverse Product</h3>
               <p className="text-sm text-gray-600">Prove that a×b×(a^-1)×(b^-1) = 1</p>
+            </Link>
+            
+            <Link to="/triangle-inequality" className="bg-mathBlue-50 rounded-lg p-4 hover:bg-mathBlue-100 transition-colors">
+              <h3 className="font-medium mb-2">Triangle Inequality</h3>
+              <p className="text-sm text-gray-600">Prove that |a| + |b| ≥ |a + b|</p>
             </Link>
           </div>
         </div>

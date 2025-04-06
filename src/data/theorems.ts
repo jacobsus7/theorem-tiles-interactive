@@ -1,3 +1,4 @@
+
 import { Theorem, Property } from "../types/theorem";
 
 // Define the available properties (axioms)
@@ -37,6 +38,31 @@ export const properties: Property[] = [
     name: "Associative Property of Multiplication",
     description: "a × (b × c) = (a × b) × c",
   },
+  {
+    id: "mult_identity",
+    name: "Multiplicative Identity",
+    description: "a × 1 = a and 1 × a = a",
+  },
+  {
+    id: "triangle_inequality",
+    name: "Triangle Inequality",
+    description: "|a| + |b| ≥ |a + b|",
+  },
+  {
+    id: "abs_definition",
+    name: "Absolute Value Definition",
+    description: "|a| = a if a ≥ 0, |a| = -a if a < 0",
+  },
+  {
+    id: "abs_mult",
+    name: "Absolute Value of Product",
+    description: "|a × b| = |a| × |b|",
+  },
+  {
+    id: "abs_properties",
+    name: "Absolute Value Properties",
+    description: "|-a| = |a| and |a| ≥ 0 for all a",
+  },
 ];
 
 // Define our theorems
@@ -56,6 +82,17 @@ export const theorems: Theorem[] = [
     initialExpression: "a×b×(a^-1)×(b^-1)",
     targetExpression: "1",
     availableProperties: properties,
+    steps: [],
+    isComplete: false,
+  },
+  {
+    id: "triangle_inequality",
+    title: "Prove the Triangle Inequality",
+    initialExpression: "|a| + |b|",
+    targetExpression: "|a + b|",
+    availableProperties: properties.filter(p => 
+      ["triangle_inequality", "abs_definition", "abs_mult", "abs_properties"].includes(p.id)
+    ),
     steps: [],
     isComplete: false,
   },
@@ -131,24 +168,40 @@ export const applyProperty = (
     };
   }
   
-  if (expression === "a×1×(a^-1)" && propertyId === "mult_comm") {
+  if (expression === "a×1×(a^-1)" && propertyId === "mult_identity") {
     return {
-      newExpression: "a×(a^-1)×1",
-      explanation: "Applied commutativity of multiplication to reorder terms"
+      newExpression: "a×(a^-1)",
+      explanation: "Applied multiplicative identity: a×1 = a"
     };
   }
   
-  if (expression === "a×(a^-1)×1" && propertyId === "mult_inverse") {
+  if (expression === "a×(a^-1)" && propertyId === "mult_inverse") {
     return {
-      newExpression: "1×1",
+      newExpression: "1",
       explanation: "Applied multiplicative inverse: a×(a^-1) = 1"
     };
   }
   
-  if (expression === "1×1" && propertyId === "mult_inverse") {
+  // Fix for 1×1 = 1
+  if (expression === "1×1" && propertyId === "mult_identity") {
     return {
       newExpression: "1",
       explanation: "Applied multiplicative identity: 1×1 = 1"
+    };
+  }
+  
+  // Triangle inequality theorem
+  if (expression === "|a| + |b|" && propertyId === "triangle_inequality") {
+    return {
+      newExpression: "≥ |a + b|",
+      explanation: "Applied triangle inequality: |a| + |b| ≥ |a + b|"
+    };
+  }
+  
+  if (expression === "≥ |a + b|" && propertyId === "abs_properties") {
+    return {
+      newExpression: "|a + b|",
+      explanation: "Proved the inequality holds for all real numbers a and b"
     };
   }
   
