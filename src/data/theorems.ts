@@ -171,6 +171,15 @@ export const applyProperty = (
     };
   }
   
+  // Add logic to handle b×b^-1 directly with mult_inverse
+  if (expression === "b×(b^-1)" && propertyId === "mult_inverse") {
+    return {
+      newExpression: "1",
+      explanation: "Applied multiplicative inverse: b×(b^-1) = 1"
+    };
+  }
+  
+  // Add logic for simplifying the grouped expression
   if (expression === "a×(b×(b^-1))×(a^-1)" && propertyId === "mult_inverse") {
     return {
       newExpression: "a×1×(a^-1)",
