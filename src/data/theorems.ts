@@ -171,15 +171,43 @@ export const applyProperty = (
     };
   }
   
-  // Add logic to handle b×b^-1 directly with mult_inverse
-  if (expression === "b×(b^-1)" && propertyId === "mult_inverse") {
+  // Handle any expression containing b×(b^-1) with mult_inverse
+  if (expression.includes("b×(b^-1)") && propertyId === "mult_inverse") {
+    const newExpr = expression.replace("b×(b^-1)", "1");
     return {
-      newExpression: "1",
+      newExpression: newExpr,
       explanation: "Applied multiplicative inverse: b×(b^-1) = 1"
     };
   }
   
-  // Add logic for simplifying the grouped expression
+  // Handle any expression containing (b^-1)×b with mult_inverse
+  if (expression.includes("(b^-1)×b") && propertyId === "mult_inverse") {
+    const newExpr = expression.replace("(b^-1)×b", "1");
+    return {
+      newExpression: newExpr,
+      explanation: "Applied multiplicative inverse: (b^-1)×b = 1"
+    };
+  }
+  
+  // Handle any expression containing a×(a^-1) with mult_inverse
+  if (expression.includes("a×(a^-1)") && propertyId === "mult_inverse") {
+    const newExpr = expression.replace("a×(a^-1)", "1");
+    return {
+      newExpression: newExpr,
+      explanation: "Applied multiplicative inverse: a×(a^-1) = 1"
+    };
+  }
+  
+  // Handle any expression containing (a^-1)×a with mult_inverse
+  if (expression.includes("(a^-1)×a") && propertyId === "mult_inverse") {
+    const newExpr = expression.replace("(a^-1)×a", "1");
+    return {
+      newExpression: newExpr,
+      explanation: "Applied multiplicative inverse: (a^-1)×a = 1"
+    };
+  }
+  
+  // Add more specific cases for the full expression handling
   if (expression === "a×(b×(b^-1))×(a^-1)" && propertyId === "mult_inverse") {
     return {
       newExpression: "a×1×(a^-1)",
@@ -187,8 +215,7 @@ export const applyProperty = (
     };
   }
   
-  if (expression === "a×1×(a^-1)" && propertyId === "mult_identity" || 
-      expression === "a×1×(a^-1)" && propertyId === "mult_identity_def") {
+  if (expression === "a×1×(a^-1)" && (propertyId === "mult_identity" || propertyId === "mult_identity_def")) {
     return {
       newExpression: "a×(a^-1)",
       explanation: "Applied multiplicative identity: a×1 = a"
@@ -199,6 +226,14 @@ export const applyProperty = (
     return {
       newExpression: "1",
       explanation: "Applied multiplicative inverse: a×(a^-1) = 1"
+    };
+  }
+  
+  // Explicitly handle the simplification for a×b×(b^-1)×(a^-1)
+  if (expression === "a×b×(b^-1)×(a^-1)" && propertyId === "mult_inverse") {
+    return {
+      newExpression: "a×1×(a^-1)",
+      explanation: "Applied multiplicative inverse: b×(b^-1) = 1"
     };
   }
   
