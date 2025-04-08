@@ -1,4 +1,5 @@
-import { Theorem, Property } from "../types/theorem";
+
+import { Theorem, Property, ProofCase } from "../types/theorem";
 
 // Define the available properties (axioms)
 export const properties: Property[] = [
@@ -71,31 +72,37 @@ export const properties: Property[] = [
     id: "abs_properties",
     name: "Absolute Value Properties",
     description: "|-a| = |a| and |a| ≥ 0 for all a",
-  },
-  {
-    id: "case_analysis",
-    name: "Case Analysis",
-    description: "Split into cases based on sign conditions",
-  },
+  }
+];
+
+// Triangle inequality theorem cases
+const triangleInequalityCases: ProofCase[] = [
   {
     id: "case1",
     name: "Case 1: a≥0, b≥0",
     description: "When both a and b are non-negative",
+    initialExpression: "|a| + |b|",
+    targetExpression: "|a + b|",
+    steps: [],
+    isComplete: false
   },
   {
     id: "case2",
     name: "Case 2: a≥0, b<0",
     description: "When a is non-negative and b is negative",
+    initialExpression: "|a| + |b|",
+    targetExpression: "|a + b|",
+    steps: [],
+    isComplete: false
   },
   {
     id: "case3",
     name: "Case 3: a<0, b<0",
     description: "When both a and b are negative",
-  },
-  {
-    id: "combine_cases",
-    name: "Combine Cases",
-    description: "Combine all cases to complete the proof",
+    initialExpression: "|a| + |b|",
+    targetExpression: "|a + b|",
+    steps: [],
+    isComplete: false
   }
 ];
 
@@ -125,11 +132,12 @@ export const theorems: Theorem[] = [
     initialExpression: "|a| + |b|",
     targetExpression: "|a + b|",
     availableProperties: properties.filter(p => 
-      ["triangle_inequality", "abs_definition", "abs_mult", "abs_properties", 
-       "case_analysis", "case1", "case2", "case3", "combine_cases"].includes(p.id)
+      ["triangle_inequality", "abs_definition", "abs_mult", "abs_properties"].includes(p.id)
     ),
     steps: [],
     isComplete: false,
+    cases: triangleInequalityCases,
+    caseBasedProof: true
   },
 ];
 
@@ -188,7 +196,8 @@ const hasMultiplicativeIdentity = (expression: string): { match: string, variabl
 // Logic to apply properties to expressions
 export const applyProperty = (
   expression: string, 
-  propertyId: string
+  propertyId: string,
+  caseId?: string // Optional case ID for case-based proofs
 ): { newExpression: string, explanation: string } | null => {
   // For our first theorem -(-1) = 1
   if (expression === "-(-1)" && propertyId === "neg_mult") {
@@ -296,68 +305,58 @@ export const applyProperty = (
     }
   }
   
-  // Triangle inequality theorem with case analysis
-  if (expression === "|a| + |b|" && propertyId === "case_analysis") {
-    return {
-      newExpression: "Case analysis",
-      explanation: "We'll split our proof into three cases based on the signs of a and b"
-    };
-  }
-  
-  if (expression === "Case analysis" && propertyId === "case1") {
-    return {
-      newExpression: "Case 1: a≥0, b≥0",
-      explanation: "For the first case, assume both a and b are non-negative"
-    };
-  }
-  
-  if (expression === "Case 1: a≥0, b≥0" && propertyId === "abs_definition") {
-    return {
-      newExpression: "Case1: a + b = |a + b|",
-      explanation: "When a≥0 and b≥0, then |a| = a and |b| = b, so |a| + |b| = a + b. Also, a + b ≥ 0, so |a + b| = a + b"
-    };
-  }
-  
-  if (expression === "Case1: a + b = |a + b|" && propertyId === "case2") {
-    return {
-      newExpression: "Case 2: a≥0, b<0",
-      explanation: "For the second case, assume a is non-negative and b is negative"
-    };
-  }
-  
-  if (expression === "Case 2: a≥0, b<0" && propertyId === "abs_definition") {
-    return {
-      newExpression: "Case2: a + (-b) ≥ |a + b|",
-      explanation: "When a≥0 and b<0, then |a| = a and |b| = -b, so |a| + |b| = a + (-b) = a - b. If a + b ≥ 0, then |a + b| = a + b, so a - b ≥ a + b, which is false. If a + b < 0, then |a + b| = -(a + b) = -a - b, so a - b ≥ -a - b, which is a ≥ -a, true when a≥0"
-    };
-  }
-  
-  if (expression === "Case2: a + (-b) ≥ |a + b|" && propertyId === "case3") {
-    return {
-      newExpression: "Case 3: a<0, b<0",
-      explanation: "For the third case, assume both a and b are negative"
-    };
-  }
-  
-  if (expression === "Case 3: a<0, b<0" && propertyId === "abs_definition") {
-    return {
-      newExpression: "Case3: (-a) + (-b) ≥ |a + b|",
-      explanation: "When a<0 and b<0, then |a| = -a and |b| = -b, so |a| + |b| = (-a) + (-b) = -a - b. Also, a + b < 0, so |a + b| = -(a + b) = -a - b"
-    };
-  }
-  
-  if (expression === "Case3: (-a) + (-b) ≥ |a + b|" && propertyId === "combine_cases") {
-    return {
-      newExpression: "∴ |a| + |b| ≥ |a + b|",
-      explanation: "In all three cases, we've shown that |a| + |b| ≥ |a + b|, so the triangle inequality is proven for all real numbers a and b"
-    };
-  }
-  
-  if (expression === "∴ |a| + |b| ≥ |a + b|" && propertyId === "triangle_inequality") {
-    return {
-      newExpression: "|a + b|",
-      explanation: "We have proven the triangle inequality: |a| + |b| ≥ |a + b| for all real numbers a and b"
-    };
+  // Triangle inequality theorem - case-specific logic
+  if (caseId) {
+    // Case 1: Both a and b are non-negative
+    if (caseId === "case1") {
+      if (expression === "|a| + |b|" && propertyId === "abs_definition") {
+        return {
+          newExpression: "a + b",
+          explanation: "When a≥0 and b≥0, |a| = a and |b| = b, so |a| + |b| = a + b"
+        };
+      }
+      
+      if (expression === "a + b" && propertyId === "abs_definition") {
+        return {
+          newExpression: "|a + b|",
+          explanation: "Since a + b ≥ 0 when a≥0 and b≥0, we have |a + b| = a + b = |a| + |b|"
+        };
+      }
+    }
+    
+    // Case 2: a≥0, b<0
+    if (caseId === "case2") {
+      if (expression === "|a| + |b|" && propertyId === "abs_definition") {
+        return {
+          newExpression: "a + (-b)",
+          explanation: "When a≥0 and b<0, |a| = a and |b| = -b, so |a| + |b| = a + (-b) = a - b"
+        };
+      }
+      
+      if (expression === "a + (-b)" && propertyId === "abs_definition") {
+        return {
+          newExpression: "|a + b|",
+          explanation: "When a≥0 and b<0: If a + b ≥ 0, |a + b| = a + b, and a - b ≥ a + b is false. If a + b < 0, |a + b| = -(a + b) = -a - b, and a - b ≥ -a - b simplifies to a ≥ -a, which is true since a≥0. Therefore, |a| + |b| ≥ |a + b|"
+        };
+      }
+    }
+    
+    // Case 3: a<0, b<0
+    if (caseId === "case3") {
+      if (expression === "|a| + |b|" && propertyId === "abs_definition") {
+        return {
+          newExpression: "(-a) + (-b)",
+          explanation: "When a<0 and b<0, |a| = -a and |b| = -b, so |a| + |b| = (-a) + (-b) = -a - b"
+        };
+      }
+      
+      if (expression === "(-a) + (-b)" && propertyId === "abs_definition") {
+        return {
+          newExpression: "|a + b|",
+          explanation: "When a<0 and b<0, a + b < 0, so |a + b| = -(a + b) = -a - b = |a| + |b|, thus |a| + |b| = |a + b|"
+        };
+      }
+    }
   }
   
   return null; // Property cannot be applied to this expression
@@ -368,4 +367,9 @@ export const isProofComplete = (
   targetExpression: string
 ): boolean => {
   return currentExpression === targetExpression;
+};
+
+// Check if all cases of a case-based proof are complete
+export const areAllCasesComplete = (cases: ProofCase[]): boolean => {
+  return cases.every(c => c.isComplete);
 };

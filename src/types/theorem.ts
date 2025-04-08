@@ -5,6 +5,16 @@ export interface Step {
   explanation?: string;
 }
 
+export interface ProofCase {
+  id: string;
+  name: string;
+  description: string;
+  initialExpression: string;
+  targetExpression: string;
+  steps: Step[];
+  isComplete: boolean;
+}
+
 export interface Theorem {
   id: string;
   title: string;
@@ -13,6 +23,8 @@ export interface Theorem {
   availableProperties: Property[];
   steps: Step[];
   isComplete: boolean;
+  cases?: ProofCase[]; // Optional cases for case-based proofs
+  caseBasedProof?: boolean; // Flag to indicate if this is a case-based proof
 }
 
 export interface Property {
