@@ -1,4 +1,3 @@
-
 import { Theorem, Property } from "../types/theorem";
 
 // Define the available properties (axioms)
@@ -73,6 +72,31 @@ export const properties: Property[] = [
     name: "Absolute Value Properties",
     description: "|-a| = |a| and |a| ≥ 0 for all a",
   },
+  {
+    id: "case_analysis",
+    name: "Case Analysis",
+    description: "Split into cases based on sign conditions",
+  },
+  {
+    id: "case1",
+    name: "Case 1: a≥0, b≥0",
+    description: "When both a and b are non-negative",
+  },
+  {
+    id: "case2",
+    name: "Case 2: a≥0, b<0",
+    description: "When a is non-negative and b is negative",
+  },
+  {
+    id: "case3",
+    name: "Case 3: a<0, b<0",
+    description: "When both a and b are negative",
+  },
+  {
+    id: "combine_cases",
+    name: "Combine Cases",
+    description: "Combine all cases to complete the proof",
+  }
 ];
 
 // Define our theorems
@@ -101,7 +125,8 @@ export const theorems: Theorem[] = [
     initialExpression: "|a| + |b|",
     targetExpression: "|a + b|",
     availableProperties: properties.filter(p => 
-      ["triangle_inequality", "abs_definition", "abs_mult", "abs_properties"].includes(p.id)
+      ["triangle_inequality", "abs_definition", "abs_mult", "abs_properties", 
+       "case_analysis", "case1", "case2", "case3", "combine_cases"].includes(p.id)
     ),
     steps: [],
     isComplete: false,
@@ -271,18 +296,67 @@ export const applyProperty = (
     }
   }
   
-  // Triangle inequality theorem
-  if (expression === "|a| + |b|" && propertyId === "triangle_inequality") {
+  // Triangle inequality theorem with case analysis
+  if (expression === "|a| + |b|" && propertyId === "case_analysis") {
     return {
-      newExpression: "≥ |a + b|",
-      explanation: "Applied triangle inequality: |a| + |b| ≥ |a + b|"
+      newExpression: "Case analysis",
+      explanation: "We'll split our proof into three cases based on the signs of a and b"
     };
   }
   
-  if (expression === "≥ |a + b|" && propertyId === "abs_properties") {
+  if (expression === "Case analysis" && propertyId === "case1") {
+    return {
+      newExpression: "Case 1: a≥0, b≥0",
+      explanation: "For the first case, assume both a and b are non-negative"
+    };
+  }
+  
+  if (expression === "Case 1: a≥0, b≥0" && propertyId === "abs_definition") {
+    return {
+      newExpression: "Case1: a + b = |a + b|",
+      explanation: "When a≥0 and b≥0, then |a| = a and |b| = b, so |a| + |b| = a + b. Also, a + b ≥ 0, so |a + b| = a + b"
+    };
+  }
+  
+  if (expression === "Case1: a + b = |a + b|" && propertyId === "case2") {
+    return {
+      newExpression: "Case 2: a≥0, b<0",
+      explanation: "For the second case, assume a is non-negative and b is negative"
+    };
+  }
+  
+  if (expression === "Case 2: a≥0, b<0" && propertyId === "abs_definition") {
+    return {
+      newExpression: "Case2: a + (-b) ≥ |a + b|",
+      explanation: "When a≥0 and b<0, then |a| = a and |b| = -b, so |a| + |b| = a + (-b) = a - b. If a + b ≥ 0, then |a + b| = a + b, so a - b ≥ a + b, which is false. If a + b < 0, then |a + b| = -(a + b) = -a - b, so a - b ≥ -a - b, which is a ≥ -a, true when a≥0"
+    };
+  }
+  
+  if (expression === "Case2: a + (-b) ≥ |a + b|" && propertyId === "case3") {
+    return {
+      newExpression: "Case 3: a<0, b<0",
+      explanation: "For the third case, assume both a and b are negative"
+    };
+  }
+  
+  if (expression === "Case 3: a<0, b<0" && propertyId === "abs_definition") {
+    return {
+      newExpression: "Case3: (-a) + (-b) ≥ |a + b|",
+      explanation: "When a<0 and b<0, then |a| = -a and |b| = -b, so |a| + |b| = (-a) + (-b) = -a - b. Also, a + b < 0, so |a + b| = -(a + b) = -a - b"
+    };
+  }
+  
+  if (expression === "Case3: (-a) + (-b) ≥ |a + b|" && propertyId === "combine_cases") {
+    return {
+      newExpression: "∴ |a| + |b| ≥ |a + b|",
+      explanation: "In all three cases, we've shown that |a| + |b| ≥ |a + b|, so the triangle inequality is proven for all real numbers a and b"
+    };
+  }
+  
+  if (expression === "∴ |a| + |b| ≥ |a + b|" && propertyId === "triangle_inequality") {
     return {
       newExpression: "|a + b|",
-      explanation: "Proved the inequality holds for all real numbers a and b"
+      explanation: "We have proven the triangle inequality: |a| + |b| ≥ |a + b| for all real numbers a and b"
     };
   }
   
