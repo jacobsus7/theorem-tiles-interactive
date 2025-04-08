@@ -108,6 +108,58 @@ export const theorems: Theorem[] = [
   },
 ];
 
+// Regular expressions for matching algebraic patterns
+const MULT_INVERSE_PATTERN = /([a-z])×\(\1\^-1\)|\(\1\^-1\)×\1/;
+const IDENTITY_PATTERN = /([a-z])×1|1×([a-z])/;
+
+// Detect if an expression contains a multiplicative inverse pair
+const hasMultiplicativeInversePair = (expression: string): { match: string, variable: string, replacement: string } | null => {
+  // Match patterns like "a×(a^-1)" or "(a^-1)×a" for any variable
+  const patterns = [
+    { regex: /([a-z])×\(\1\^-1\)/g, format: (v: string) => `${v}×(${v}^-1)` },
+    { regex: /\(([a-z])\^-1\)×\1/g, format: (v: string) => `(${v}^-1)×${v}` }
+  ];
+  
+  for (const {regex, format} of patterns) {
+    const matches = [...expression.matchAll(regex)];
+    if (matches.length > 0) {
+      const match = matches[0];
+      const variable = match[1]; // The captured variable (a, b, etc.)
+      const fullMatch = match[0]; // The full match like "a×(a^-1)"
+      return {
+        match: fullMatch,
+        variable: variable,
+        replacement: "1" // Replace with 1
+      };
+    }
+  }
+  return null;
+};
+
+// Detect if an expression contains a multiplicative identity
+const hasMultiplicativeIdentity = (expression: string): { match: string, variable: string, replacement: string } | null => {
+  // Match patterns like "a×1" or "1×a" for any variable
+  const patterns = [
+    { regex: /([a-z])×1/g, format: (v: string) => `${v}×1` },
+    { regex: /1×([a-z])/g, format: (v: string) => `1×${v}` }
+  ];
+  
+  for (const {regex, format} of patterns) {
+    const matches = [...expression.matchAll(regex)];
+    if (matches.length > 0) {
+      const match = matches[0];
+      const variable = match[1]; // The captured variable (a, b, etc.)
+      const fullMatch = match[0]; // The full match like "a×1"
+      return {
+        match: fullMatch,
+        variable: variable,
+        replacement: variable // Replace with just the variable
+      };
+    }
+  }
+  return null;
+};
+
 // Logic to apply properties to expressions
 export const applyProperty = (
   expression: string, 
@@ -156,7 +208,31 @@ export const applyProperty = (
     };
   }
   
-  // For our second theorem a×b×(a^-1)×(b^-1) = 1
+  // General multiplicative inverse property (for any variables)
+  if (propertyId === "mult_inverse") {
+    const inversePair = hasMultiplicativeInversePair(expression);
+    if (inversePair) {
+      const newExpression = expression.replace(inversePair.match, "1");
+      return {
+        newExpression,
+        explanation: `Applied multiplicative inverse: ${inversePair.match} = 1`
+      };
+    }
+  }
+  
+  // General multiplicative identity property (for any variables)
+  if (propertyId === "mult_identity" || propertyId === "mult_identity_def") {
+    const identityMatch = hasMultiplicativeIdentity(expression);
+    if (identityMatch) {
+      const newExpression = expression.replace(identityMatch.match, identityMatch.replacement);
+      return {
+        newExpression,
+        explanation: `Applied multiplicative identity: ${identityMatch.match} = ${identityMatch.replacement}`
+      };
+    }
+  }
+  
+  // Handle specific cases for the second theorem
   if (expression === "a×b×(a^-1)×(b^-1)" && propertyId === "mult_comm") {
     return {
       newExpression: "a×b×(b^-1)×(a^-1)",
@@ -171,75 +247,8 @@ export const applyProperty = (
     };
   }
   
-  // Handle any expression containing b×(b^-1) with mult_inverse
-  if (expression.includes("b×(b^-1)") && propertyId === "mult_inverse") {
-    const newExpr = expression.replace("b×(b^-1)", "1");
-    return {
-      newExpression: newExpr,
-      explanation: "Applied multiplicative inverse: b×(b^-1) = 1"
-    };
-  }
-  
-  // Handle any expression containing (b^-1)×b with mult_inverse
-  if (expression.includes("(b^-1)×b") && propertyId === "mult_inverse") {
-    const newExpr = expression.replace("(b^-1)×b", "1");
-    return {
-      newExpression: newExpr,
-      explanation: "Applied multiplicative inverse: (b^-1)×b = 1"
-    };
-  }
-  
-  // Handle any expression containing a×(a^-1) with mult_inverse
-  if (expression.includes("a×(a^-1)") && propertyId === "mult_inverse") {
-    const newExpr = expression.replace("a×(a^-1)", "1");
-    return {
-      newExpression: newExpr,
-      explanation: "Applied multiplicative inverse: a×(a^-1) = 1"
-    };
-  }
-  
-  // Handle any expression containing (a^-1)×a with mult_inverse
-  if (expression.includes("(a^-1)×a") && propertyId === "mult_inverse") {
-    const newExpr = expression.replace("(a^-1)×a", "1");
-    return {
-      newExpression: newExpr,
-      explanation: "Applied multiplicative inverse: (a^-1)×a = 1"
-    };
-  }
-  
-  // Add more specific cases for the full expression handling
-  if (expression === "a×(b×(b^-1))×(a^-1)" && propertyId === "mult_inverse") {
-    return {
-      newExpression: "a×1×(a^-1)",
-      explanation: "Applied multiplicative inverse: b×(b^-1) = 1"
-    };
-  }
-  
-  if (expression === "a×1×(a^-1)" && (propertyId === "mult_identity" || propertyId === "mult_identity_def")) {
-    return {
-      newExpression: "a×(a^-1)",
-      explanation: "Applied multiplicative identity: a×1 = a"
-    };
-  }
-  
-  if (expression === "a×(a^-1)" && propertyId === "mult_inverse") {
-    return {
-      newExpression: "1",
-      explanation: "Applied multiplicative inverse: a×(a^-1) = 1"
-    };
-  }
-  
-  // Explicitly handle the simplification for a×b×(b^-1)×(a^-1)
-  if (expression === "a×b×(b^-1)×(a^-1)" && propertyId === "mult_inverse") {
-    return {
-      newExpression: "a×1×(a^-1)",
-      explanation: "Applied multiplicative inverse: b×(b^-1) = 1"
-    };
-  }
-  
   // For 1×1 = 1
-  if ((expression === "1×1" && propertyId === "mult_identity") || 
-      (expression === "1×1" && propertyId === "mult_identity_def")) {
+  if (expression === "1×1" && (propertyId === "mult_identity" || propertyId === "mult_identity_def")) {
     return {
       newExpression: "1",
       explanation: "Applied multiplicative identity: 1×1 = 1"
@@ -247,18 +256,19 @@ export const applyProperty = (
   }
   
   // For additive identity
-  if (expression.includes("+0") && propertyId === "add_identity_def") {
-    return {
-      newExpression: expression.replace("+0", ""),
-      explanation: "Applied additive identity: a+0 = a"
-    };
-  }
-  
-  if (expression.includes("0+") && propertyId === "add_identity_def") {
-    return {
-      newExpression: expression.replace("0+", ""),
-      explanation: "Applied additive identity: 0+a = a"
-    };
+  if (propertyId === "add_identity_def") {
+    if (expression.includes("+0")) {
+      return {
+        newExpression: expression.replace("+0", ""),
+        explanation: "Applied additive identity: a+0 = a"
+      };
+    }
+    if (expression.includes("0+")) {
+      return {
+        newExpression: expression.replace("0+", ""),
+        explanation: "Applied additive identity: 0+a = a"
+      };
+    }
   }
   
   // Triangle inequality theorem
